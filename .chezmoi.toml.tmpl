@@ -1,0 +1,63 @@
+{{- $osid := .chezmoi.os -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   $osid = "macos" -}}
+{{- else if eq .chezmoi.os "linux" -}}
+{{-   if eq .chezmoi.osRelease.id "ubuntu" -}}
+{{-     $osid = "ubuntu" -}}
+{{-   end -}}
+{{- end -}}
+
+{{- $gitName := "" -}}
+{{- $gitEmail := "" -}}
+
+{{- if hasKey . "git_name" -}}
+{{-   $gitName = .git_name -}}
+{{- else -}}
+{{-   $gitName = promptString "Git user name" -}}
+{{- end -}}
+
+{{- if hasKey . "git_email" -}}
+{{-   $gitEmail = .git_email -}}
+{{- else -}}
+{{-   $gitEmail = promptString "Git email" -}}
+{{- end -}}
+
+[data]
+    osid = {{ $osid | quote }}
+    git_name = {{ $gitName | quote }}
+    git_email = {{ $gitEmail | quote }}
+
+    # Binary versions (for non-cargo installs)
+    lazygit_version = "0.43.1"
+    fzf_version = "0.48.1"
+    television_version = "0.13.11"
+    zed_version = "0.162.3"
+
+    # Cargo tools - single source of truth
+    cargo_tools = [
+        "ripgrep",
+        "bat",
+        "eza",
+        "zoxide",
+        "git-delta",
+        "starship",
+        "fd-find",
+        "tokei",
+        "du-dust",
+    ]
+
+    # Cargo tool commands (for verification)
+    # Maps cargo crate name to actual command name
+    [data.cargo_commands]
+        ripgrep = "rg"
+        bat = "bat"
+        eza = "eza"
+        zoxide = "zoxide"
+        git-delta = "delta"
+        starship = "starship"
+        fd-find = "fd"
+        tokei = "tokei"
+        du-dust = "dust"
+
+    # Feature flags
+    install_oh_my_zsh = true

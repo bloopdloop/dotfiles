@@ -1,0 +1,25 @@
+README.md
+LICENSE
+.git/
+*.swp
+.DS_Store
+
+# Platform-specific ignores
+{{ if ne .chezmoi.os "darwin" }}
+.macos
+Brewfile
+{{ end }}
+
+{{ if ne .chezmoi.os "linux" }}
+.linux
+{{ end }}
+
+# Don't manage oh-my-zsh directory itself
+.oh-my-zsh/
+
+# Don't manage cargo/rust installation
+.cargo/
+.rustup/
+
+# Don't manage tmux plugins
+.tmux/plugins/

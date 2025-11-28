@@ -1,0 +1,23 @@
+#!/bin/bash
+set -euo pipefail
+
+if ! command -v cargo &> /dev/null; then
+    echo "Installing Rust via rustup..."
+
+    # Install rustup (Rust toolchain manager)
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path
+
+    # Source cargo env for this script
+    source "$HOME/.cargo/env"
+
+    echo "✓ Rust installed"
+else
+    echo "✓ Rust already installed"
+    source "$HOME/.cargo/env"
+fi
+
+# Ensure we're on stable and up to date
+rustup default stable
+rustup update
+
+echo "✓ Rust toolchain ready"

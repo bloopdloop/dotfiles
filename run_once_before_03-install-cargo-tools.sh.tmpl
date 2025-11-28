@@ -1,0 +1,39 @@
+#!/bin/bash
+set -euo pipefail
+
+echo "Installing cargo tools..."
+
+# Source cargo env
+if [ -f "$HOME/.cargo/env" ]; then
+    source "$HOME/.cargo/env"
+else
+    echo "Error: Cargo not found. Run rust installation first."
+    exit 1
+fi
+
+# Tools to install - single source of truth from config
+CARGO_TOOLS=(
+{{- range .cargo_tools }}
+    "{{ . }}"
+{{- end }}
+)
+
+echo "Will install ${#CARGO_TOOLS[@]} cargo tools..."
+echo "Note: This may take 10-20 minutes on first run (compiling from source)"
+echo ""
+
+# Install each tool
+for tool in "${CARGO_TOOLS[@]}"; do
+    # Check if already installed
+    if cargo install --list | grep -q "^$tool "; then
+        echo "✓ $tool already installed"
+    else
+        echo "Installing $tool..."
+        # Use --locked to use exact dependency versions from lock file
+        cargo install "$tool" --locked
+        echo "✓ $tool installed"
+    fi
+done
+
+echo ""
+echo "✓ All cargo tools installed"

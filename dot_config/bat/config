@@ -1,0 +1,13 @@
+# bat configuration
+
+# Set theme
+--theme="TwoDark"
+
+# Show line numbers, Git modifications and file header
+--style="numbers,changes,header"
+
+# Use italic text
+--italic-text=always
+
+# Add mouse scrolling support in less
+--paging=always

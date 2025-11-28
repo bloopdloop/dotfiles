@@ -1,0 +1,91 @@
+#!/bin/bash
+set -euo pipefail
+
+echo "Configuring shell..."
+
+# Set zsh as default shell
+ZSH_PATH="$(command -v zsh)"
+if [ "$SHELL" != "$ZSH_PATH" ]; then
+    echo "Setting zsh as default shell..."
+    if ! grep -q "$ZSH_PATH" /etc/shells; then
+        echo "$ZSH_PATH" | sudo tee -a /etc/shells
+    fi
+    chsh -s "$ZSH_PATH"
+    echo "✓ Default shell changed (takes effect on next login)"
+else
+    echo "✓ zsh already default shell"
+fi
+
+# Verify all installations
+echo ""
+echo "=== Verification ==="
+echo ""
+
+# Verify cargo tools using the config
+echo "Cargo tools:"
+{{- range $crate, $cmd := .cargo_commands }}
+if command -v {{ $cmd }} &> /dev/null; then
+    echo "  ✓ {{ $crate }} ({{ $cmd }})"
+else
+    echo "  ✗ {{ $crate }} ({{ $cmd }}) - NOT FOUND"
+fi
+{{- end }}
+
+echo ""
+echo "Other tools:"
+
+# External binaries
+if command -v lazygit &> /dev/null; then
+    echo "  ✓ lazygit"
+else
+    echo "  ✗ lazygit - NOT FOUND"
+fi
+
+if command -v tv &> /dev/null; then
+    echo "  ✓ television"
+else
+    echo "  ✗ television - NOT FOUND"
+fi
+
+# System packages
+if command -v nvim &> /dev/null; then
+    echo "  ✓ neovim"
+else
+    echo "  ✗ neovim - NOT FOUND"
+fi
+
+if command -v tmux &> /dev/null; then
+    echo "  ✓ tmux"
+else
+    echo "  ✗ tmux - NOT FOUND"
+fi
+
+if command -v cargo &> /dev/null; then
+    echo "  ✓ cargo"
+else
+    echo "  ✗ cargo - NOT FOUND"
+fi
+
+if command -v zed &> /dev/null; then
+    echo "  ✓ zed"
+else
+    echo "  ✗ zed - NOT FOUND"
+fi
+
+{{- if .install_oh_my_zsh }}
+if [ -d "$HOME/.oh-my-zsh" ]; then
+    echo "  ✓ oh-my-zsh"
+else
+    echo "  ✗ oh-my-zsh - NOT FOUND"
+fi
+{{- end }}
+
+echo ""
+echo "=== Setup Complete! ==="
+echo ""
+echo "Next steps:"
+echo "  1. Restart your terminal or run: exec zsh"
+echo "  2. Test git diff to see delta in action"
+echo "  3. Run 'tokei' in a code directory to see stats"
+echo "  4. Run 'dust' to see disk usage visualization"
+echo ""

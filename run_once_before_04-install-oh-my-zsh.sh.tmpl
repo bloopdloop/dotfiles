@@ -1,0 +1,32 @@
+#!/bin/bash
+set -euo pipefail
+
+{{- if .install_oh_my_zsh }}
+
+# Check if oh-my-zsh is already installed
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    echo "Installing oh-my-zsh..."
+
+    # RUNZSH=no prevents launching zsh after install
+    # KEEP_ZSHRC=yes prevents overwriting our managed .zshrc
+    RUNZSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+    echo "✓ oh-my-zsh installed"
+else
+    echo "✓ oh-my-zsh already installed"
+fi
+
+# Install plugins
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
+    git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+fi
+
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
+fi
+
+echo "✓ oh-my-zsh plugins installed"
+
+{{- end }}

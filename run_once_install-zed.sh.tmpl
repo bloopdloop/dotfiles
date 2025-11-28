@@ -1,0 +1,36 @@
+#!/bin/bash
+set -euo pipefail
+
+{{- if eq .chezmoi.os "darwin" }}
+
+# Zed on macOS
+if ! command -v zed &> /dev/null; then
+    echo "Installing Zed Preview..."
+    brew install --cask zed@preview
+    echo "✓ Zed Preview installed"
+else
+    echo "✓ Zed already installed"
+fi
+
+{{- else if eq .osid "ubuntu" }}
+
+# Zed on Linux - download and install
+ZED_VERSION="{{ .zed_version }}"
+ZED_URL="https://zed.dev/api/releases/preview/{{ .zed_version }}/zed-linux-{{ .chezmoi.arch }}.tar.gz"
+
+if ! command -v zed &> /dev/null; then
+    echo "Installing Zed Preview v${ZED_VERSION}..."
+
+    # Download and extract to ~/.local
+    curl -L "${ZED_URL}" | tar xz -C ~/.local
+
+    # Create symlink to binary
+    mkdir -p ~/.local/bin
+    ln -sf ~/.local/zed.app/bin/zed ~/.local/bin/zed
+
+    echo "✓ Zed Preview v${ZED_VERSION} installed"
+else
+    echo "✓ Zed already installed"
+fi
+
+{{- end }}
